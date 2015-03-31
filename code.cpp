@@ -6,20 +6,34 @@
 #include<cassert>
 #include<string>
 using namespace std;
-//baseNum used for file addressing
-int baseNum = 0;
-string makeNew()
+//baseNumNode used for file addressing
+int baseNumNode = 0;
+int baseDataFile = 0;
+string makeNewNode()
 {
-	//Return a new file address
+	//Return a new file address for the node
 	string ans = "AAAAAA";
-	int curr = baseNum;
-	baseNum++;
+	int curr = baseNumNode;
+	baseNumNode++;
 	for(int i=5;i>=0;i--)
 	{
 		ans[i] += curr % 26;
 		curr /= 26;
 	}
-	return ans;
+	return "nodes/" + ans  + ".nd";
+}
+string makeNewDataFile()
+{
+	//Return a new file address for the node
+	string ans = "AAAAAA";
+	int curr = baseDataFile;
+	baseDataFile++;
+	for(int i=5;i>=0;i--)
+	{
+		ans[i] += curr % 26;
+		curr /= 26;
+	}
+	return "data/" + ans + ".dat";
 }
 //Max keys in a node
 int maxKeys = 0;
@@ -31,7 +45,7 @@ void readMaxKeys()
 	fin>>maxKeys;
 	fin.close();
 }
-//Node to write 
+//Node for B+ tree
 struct node
 {
 	string fName;	//Filename (addressed by 6 characters)
@@ -45,5 +59,6 @@ struct node
 int main()
 {
 	readMaxKeys();
+	
 	return 0;
 }
