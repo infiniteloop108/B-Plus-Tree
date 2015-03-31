@@ -1,0 +1,31 @@
+Download the Zip File containing the assignment. Please note that the Query File has been updated - Window and Knn operations have been removed. Read the clarifications and modifications to the assignment, in the Latest News section, before going ahead.
+
+There are some corrections and clarifications for Assignment 2.
+
+Corrections:
+
+1. Ignore the Window Queries. You are required to do Point Insertion, Point Query and Range Query Operations only.
+
+You may either delete the rows with Operation type "4" from the data file, before continuing, or ignore the same in your code.
+
+2. Refer to the following line in the assignment:
+
+"Report the following times for both the structures and for each type of operation"
+
+You have to build only one structure in the assignment. You have to report times for insertion, and queries.
+
+3. The number 32 given as the sample block size (in terms of maximum number of keys) may be too small for practical purposes (your files aka nodes may end up being less than a KB). For sample test case, you may consider any value less than or equal to 512.
+
+Clarifications:
+
+1. A Range Query is a query in which you have to report all the points that are present in a range. For example, if you have the following keys in data:
+
+0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9
+
+and a Range Query with (Centre = 0.5, Range = 0.2) is given, you have to report all points from (0.5 - 0.2) to (0.5 + 0.2). In the above case, the points would be (0.3, 0.4, 0.5, 0.6, 0.7)
+
+2. The Measurements are to be done in terms of time taken and number of Disk Accesses. Since you'll be emulating a Disk Block as a File, count the number of files you have to access, as a measure of number of Disk Accesses.
+
+3. The "Pointers" to Disk Blocks (or in this case, name of files), could be 2-byte Strings. For example, the first Disk Block can have an address "AA" (i.e. the first data file can be named "AA"), followed by "AB", "AC"... "AZ", "BA", "BB"... "BZ" etc. This scheme can handle 26 X 26 nodes in the tree. 
+
+You are free to choose any addressing scheme of your choice other than this as well.
