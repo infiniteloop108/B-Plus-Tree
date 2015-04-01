@@ -93,6 +93,18 @@ node readNode(string fName)
 int main()
 {
 	readMaxKeys();
+	//Build the initial tree
+	string fileName = "assgn2_bplus_data.txt";
+	ifstream fin(fileName, ios::in);
+	while(!fin.eof())
+	{
+		ld key;
+		fin>>key;
+		if(fin.eof())break;
+		string data;
+		fin>>data;
+	}
+	fin.close();
 	while(!feof(stdin))
 	{
 		int type;

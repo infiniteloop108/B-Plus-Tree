@@ -10,4 +10,5 @@ Basically, the program initially builds the tree of points given in "assgn\_\*" 
 - TODO
 
 ##Output:
+- Outputs statistics on stdout
 - TODO
