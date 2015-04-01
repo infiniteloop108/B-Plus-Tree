@@ -6,6 +6,7 @@
 #include<cassert>
 #include<string>
 using namespace std;
+#define ld long double
 //baseNumNode used for file addressing
 int baseNumNode = 0;
 int baseDataFile = 0;
@@ -92,6 +93,31 @@ node readNode(string fName)
 int main()
 {
 	readMaxKeys();
-	
+	while(!feof(stdin))
+	{
+		int type;
+		cin>>type;
+		if(feof(stdin))break;
+		if(type < 0 || type > 2)break;
+		if(type == 0)
+		{
+			//Insert Query
+			ld key;
+			string data;
+			cin>>key>>data;
+		}
+		else if(type == 1)
+		{
+			//Point query
+			ld key;
+			cin>>key;
+		}
+		else
+		{
+			//Range Query
+			ld key1,key2;
+			cin>>key1>>key2;
+		}
+	}
 	return 0;
 }
