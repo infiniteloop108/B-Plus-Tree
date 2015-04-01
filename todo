@@ -1,2 +1,2 @@
-Add config to build/rebuild the tree
-store already built data in data/
+Add option in config to build/rebuild the tree
+store already built config in data/

@@ -69,7 +69,7 @@ void writeNode(node x)
 		fout<<x.keys[i]<<" ";
 	fout<<endl;
 	for(int i=0;i<=x.numKeys;++i)
-	fout<<x.children[i]<<" ";
+		fout<<x.children[i]<<" ";
 	fout.close();
 }
 //Write the data in a file
@@ -100,8 +100,9 @@ node readNode(string fName)
 string rootName;
 //Make a new node
 //This might be a leaf if making the root (first time)
-node makeNewNode(bool isLeaf = 0)
+node makeNewNode(bool isLeaf = false)
 {
+	//Note that a new node is always a root
 	node now;
 	now.fName = makeNewNodeName();
 	now.isRoot = 1;
@@ -136,35 +137,50 @@ node findLeaf(ld key, string nodePtr = rootName)
 void insert(ld key, string data)
 {
 	node now = findLeaf(key);
-	if( now.numKeys == maxKeys )
+	int idx = lower_bound(now.keys.begin(),now.keys.end(),key - 1.0e-10) - now.keys.begin();
+	string newFile = makeNewDataFileName();
+	writeData(newFile, data);
+	now.numKeys++;
+	now.keys.push_back(key);
+	now.children.push_back(newFile);
+	//Push all the elements 1 place right from idx onwards
+	for(int i = now.keys.size() - 2;i>=idx;i--)
+		now.keys[i+1]=now.keys[i];
+	for(int i = now.children.size() - 2;i>=idx;i--)
+		now.children[i+1] = now.children[i];
+	now.keys[idx] = key;
+	now.children[idx] = newFile;
+	if( now.numKeys > maxKeys )
 	{
 		//Need to split
+		
 	}
 	else
 	{
 		//Peacefully Insert
-		int idx = lower_bound(now.keys.begin(),now.keys.end(),key - 1.0e-10) - now.keys.begin();
-		string newFile = makeNewDataFileName();
-		writeData(newFile, data);
-		now.numKeys++;
-		now.keys.push_back(key);
-		now.children.push_back(newFile);
-		//Push all the elements 1 place right from idx onwards
-		for(int i = now.keys.size() - 2;i>=idx;i--)
-			now.keys[i+1]=now.keys[i];
-		for(int i = now.children.size() - 2;i>=idx;i--)
-			now.children[i+1] = now.children[i];
-		now.keys[idx] = key;
-		now.children[idx] = newFile;
 		writeNode(now);
 	}
 }
 //Add key to an internal node
 //left, right are the pointers
-void addValueToNode(ld key, node now, string left, string right)
+void addValueToNode(ld key, string nowPtr, string left, string right)
 {
+	if( nowPtr == "NULL" )
+	{
+		//Need to make a new root
+		node now = makeNewNode();
+		now.numKeys++;
+		now.keys.push_back(key);
+		now.children.push_back(right);
+		now.children[0] = left;
+		writeNode(now);
+		rootName = now.fName;
+	}
+	else
+	{
 
 
+	}
 }
 int main()
 {
