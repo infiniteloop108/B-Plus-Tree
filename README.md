@@ -2,7 +2,7 @@ B+ Tree!
 ========
 - To compile use `make`
 - To clean use `make clean`
-- Supports miultiple keys
+- Supports multiple keys
 
 ##Input format:
 - TODO
