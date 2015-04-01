@@ -98,18 +98,26 @@ node readNode(string fName)
 }
 //root node
 string rootName;
+//Make a new node
+//This might be a leaf if making the root (first time)
+node makeNewNode(bool isLeaf = 0)
+{
+	node now;
+	now.fName = makeNewNodeName();
+	now.isRoot = 1;
+	now.isLeaf = isLeaf;
+	now.parent = "NULL";
+	now.numKeys = 0;
+	now.keys.clear();
+	now.children.clear();
+	now.children.push_back("NULL");
+	return now;
+}
+//Init an empty BTree
 void init()
 {
-	node root;
-	root.fName = makeNewNodeName();
-	rootName = root.fName;	//Set global root pointer
-	root.isRoot = 1;
-	root.isLeaf = 1;
-	root.parent = "NULL";
-	root.numKeys = 0;
-	root.keys.clear();
-	root.children.clear();
-	root.children.push_back("NULL");
+	node root = makeNewNode(true);
+	rootName = root.fName;
 	writeNode(root);
 	return;
 }
@@ -150,6 +158,13 @@ void insert(ld key, string data)
 		now.children[idx] = newFile;
 		writeNode(now);
 	}
+}
+//Add key to an internal node
+//left, right are the pointers
+void addValueToNode(ld key, node now, string left, string right)
+{
+
+
 }
 int main()
 {
