@@ -21,7 +21,7 @@ string makeNewNodeName()
 		ans[i] += curr % 26;
 		curr /= 26;
 	}
-	return "nodes/" + ans  + ".nd";
+	return "nodes/" + ans  + ".txt";
 }
 string makeNewDataFileName()
 {
@@ -34,7 +34,7 @@ string makeNewDataFileName()
 		ans[i] += curr % 26;
 		curr /= 26;
 	}
-	return "data/" + ans + ".dat";
+	return "data/" + ans + ".txt";
 }
 //Max keys in a node
 int maxKeys = 0;
@@ -54,7 +54,7 @@ struct node
 	bool isLeaf;	//To denote whether a this is a leaf or not
 	int numKeys;	//number of keys in this node
 	string parent;	//pointer to parent file
-	vector<int> keys;	//keys stored
+	vector<ld> keys;	//keys stored
 	vector<string> children;	//Children pointers
 };
 //Write this node to its file
@@ -68,11 +68,8 @@ void writeNode(node x)
 	for(int i=0;i<x.numKeys;++i)
 		fout<<x.keys[i]<<" ";
 	fout<<endl;
-	if(x.numKeys != 0)	//Done to correctly write empty root
-	{
-		for(int i=0;i<=x.numKeys;++i)
-			fout<<x.children[i]<<" ";
-	}
+	for(int i=0;i<=x.numKeys;++i)
+	fout<<x.children[i]<<" ";
 	fout.close();
 }
 //Write the data in a file
@@ -86,6 +83,7 @@ void writeData(string fName, string data)
 node readNode(string fName)
 {
 	node ans;
+	ans.fName = fName;
 	ifstream fin(fName, ios::in);
 	fin>>ans.isRoot;
 	fin>>ans.isLeaf;
@@ -99,18 +97,59 @@ node readNode(string fName)
 	return ans;
 }
 //root node
-node root;
+string rootName;
 void init()
 {
+	node root;
 	root.fName = makeNewNodeName();
+	rootName = root.fName;	//Set global root pointer
 	root.isRoot = 1;
 	root.isLeaf = 1;
 	root.parent = "NULL";
 	root.numKeys = 0;
 	root.keys.clear();
 	root.children.clear();
+	root.children.push_back("NULL");
 	writeNode(root);
 	return;
+}
+//Find the leaf node corresponding to a key
+node findLeaf(ld key, string nodePtr = rootName)
+{
+	node now = readNode(nodePtr); 
+	if( now.isLeaf ) return now;
+	//Now find the first element greater or equal than key
+	int idx = lower_bound(now.keys.begin(),now.keys.end(),idx-1.0e-10) - now.keys.begin();	//epsilon used for floating point error
+	return findLeaf(key, now.children[idx]); 
+}
+//Insert into the B+Tree
+//Find the leaf and split if needed
+//Propogate till root if needed
+void insert(ld key, string data)
+{
+	node now = findLeaf(key);
+	if( now.numKeys == maxKeys )
+	{
+		//Need to split
+	}
+	else
+	{
+		//Peacefully Insert
+		int idx = lower_bound(now.keys.begin(),now.keys.end(),key - 1.0e-10) - now.keys.begin();
+		string newFile = makeNewDataFileName();
+		writeData(newFile, data);
+		now.numKeys++;
+		now.keys.push_back(key);
+		now.children.push_back(newFile);
+		//Push all the elements 1 place right from idx onwards
+		for(int i = now.keys.size() - 2;i>=idx;i--)
+			now.keys[i+1]=now.keys[i];
+		for(int i = now.children.size() - 2;i>=idx;i--)
+			now.children[i+1] = now.children[i];
+		now.keys[idx] = key;
+		now.children[idx] = newFile;
+		writeNode(now);
+	}
 }
 int main()
 {
@@ -128,6 +167,7 @@ int main()
 		if(fin.eof())break;
 		string data;
 		fin>>data;
+		insert(key, data);
 	}
 	fin.close();
 	while(!feof(stdin))
