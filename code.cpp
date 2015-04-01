@@ -10,7 +10,7 @@ using namespace std;
 //baseNumNode used for file addressing
 int baseNumNode = 0;
 int baseDataFile = 0;
-string makeNewNode()
+string makeNewNodeName()
 {
 	//Return a new file address for the node
 	string ans = "AAAAAA";
@@ -23,7 +23,7 @@ string makeNewNode()
 	}
 	return "nodes/" + ans  + ".nd";
 }
-string makeNewDataFile()
+string makeNewDataFileName()
 {
 	//Return a new file address for the node
 	string ans = "AAAAAA";
@@ -53,6 +53,7 @@ struct node
 	bool isRoot;	//To denote whether this node is a root or not
 	bool isLeaf;	//To denote whether a this is a leaf or not
 	int numKeys;	//number of keys in this node
+	string parent;	//pointer to parent file
 	vector<int> keys;	//keys stored
 	vector<string> children;	//Children pointers
 };
@@ -63,11 +64,16 @@ void writeNode(node x)
 	fout<<x.isRoot<<endl;
 	fout<<x.isLeaf<<endl;
 	fout<<x.numKeys<<endl;
+	fout<<x.parent<<endl;
 	for(int i=0;i<x.numKeys;++i)
 		fout<<x.keys[i]<<" ";
 	fout<<endl;
-	for(int i=0;i<=x.numKeys;++i)
-		fout<<x.children[i]<<" ";
+	if(x.numKeys != 0)	//Done to correctly write empty root
+	{
+		for(int i=0;i<=x.numKeys;++i)
+			fout<<x.children[i]<<" ";
+	}
+	fout.close();
 }
 //Write the data in a file
 void writeData(string fName, string data)
@@ -84,20 +90,39 @@ node readNode(string fName)
 	fin>>ans.isRoot;
 	fin>>ans.isLeaf;
 	fin>>ans.numKeys;
+	fin>>ans.parent;
 	ans.keys.resize(ans.numKeys);
 	ans.children.resize(ans.numKeys+1);
 	for(int i=0;i<ans.numKeys;++i)fin>>ans.keys[i];
 	for(int i=0;i<=ans.numKeys;++i)fin>>ans.children[i];
+	fin.close();
 	return ans;
+}
+//root node
+node root;
+void init()
+{
+	root.fName = makeNewNodeName();
+	root.isRoot = 1;
+	root.isLeaf = 1;
+	root.parent = "NULL";
+	root.numKeys = 0;
+	root.keys.clear();
+	root.children.clear();
+	writeNode(root);
+	return;
 }
 int main()
 {
 	readMaxKeys();
 	//Build the initial tree
+	init();
+	//Read initial points
 	string fileName = "assgn2_bplus_data.txt";
 	ifstream fin(fileName, ios::in);
 	while(!fin.eof())
 	{
+		//Insert these elements
 		ld key;
 		fin>>key;
 		if(fin.eof())break;
