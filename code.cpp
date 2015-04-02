@@ -125,6 +125,7 @@ void init()
 //Find the leaf node corresponding to a key
 node findLeaf(ld key, string nodePtr = rootName)
 {
+	assert(nodePtr != "NULL");
 	node now = readNode(nodePtr); 
 	if( now.isLeaf ) return now;
 	//Now find the first element greater or equal than key
@@ -212,7 +213,7 @@ pair<string,string> addValueToNode(ld key, string nowPtr, string left, string ri
 				now.keys[i] = keys[i];
 				now.children[i] = children[i];
 			}
-			now.children[now.numKeys] = children[idx+1];
+			now.children[now.numKeys] = children[idx];
 			//Make the new right node
 			rightNode.numKeys = n-idx-1;
 			rightNode.keys.resize(rightNode.numKeys);
@@ -223,6 +224,16 @@ pair<string,string> addValueToNode(ld key, string nowPtr, string left, string ri
 				rightNode.children[i-idx-1] = children[i];
 			}
 			rightNode.children[rightNode.numKeys] = children[n];
+			//Need to patch all the children parents! 
+			//All the children point to now. Need to make the children of rightNode point to rightNode
+			//This is computationally heavy
+			//One way is to patch the parents in findNode. This results in correct exec, but inconsistent data
+			for(int i = 0;i<rightNode.children.size();++i)
+			{
+				node child = readNode(rightNode.children[i]);
+				child.parent = rightNode.fName;
+				writeNode(child);
+			}
 			//Now push the key above
 			pair<string, string> parents = addValueToNode(keys[idx], now.parent, now.fName, rightNode.fName);
 			now.parent = parents.first;
@@ -316,6 +327,7 @@ int main()
 	//Read initial points
 	string fileName = "assgn2_bplus_data.txt";
 	ifstream fin(fileName.c_str(), ios::in);
+	int pt = 0;
 	while(!fin.eof())
 	{
 		//Insert these elements
