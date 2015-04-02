@@ -131,39 +131,10 @@ node findLeaf(ld key, string nodePtr = rootName)
 	int idx = lower_bound(now.keys.begin(),now.keys.end(),idx-1.0e-10) - now.keys.begin();	//epsilon used for floating point error
 	return findLeaf(key, now.children[idx]); 
 }
-//Insert into the B+Tree
-//Find the leaf and split if needed
-//Propogate till root if needed
-void insert(ld key, string data)
-{
-	node now = findLeaf(key);
-	int idx = lower_bound(now.keys.begin(),now.keys.end(),key - 1.0e-10) - now.keys.begin();
-	string newFile = makeNewDataFileName();
-	writeData(newFile, data);
-	now.numKeys++;
-	now.keys.push_back(key);
-	now.children.push_back(newFile);
-	//Push all the elements 1 place right from idx onwards
-	for(int i = now.keys.size() - 2;i>=idx;i--)
-		now.keys[i+1]=now.keys[i];
-	for(int i = now.children.size() - 2;i>=idx;i--)
-		now.children[i+1] = now.children[i];
-	now.keys[idx] = key;
-	now.children[idx] = newFile;
-	if( now.numKeys > maxKeys )
-	{
-		//Need to split
-		
-	}
-	else
-	{
-		//Peacefully Insert
-		writeNode(now);
-	}
-}
 //Add key to an internal node
 //left, right are the pointers
-void addValueToNode(ld key, string nowPtr, string left, string right)
+//Returns the pointer to the node in which the key was inserted
+string addValueToNode(ld key, string nowPtr, string left, string right)
 {
 	if( nowPtr == "NULL" )
 	{
@@ -175,11 +146,80 @@ void addValueToNode(ld key, string nowPtr, string left, string right)
 		now.children[0] = left;
 		writeNode(now);
 		rootName = now.fName;
+		return now.fName;
 	}
 	else
 	{
 
-
+		return nowPtr;
+	}
+}
+//Insert into the B+Tree
+//Find the leaf and split if needed
+//Propogate till root if needed
+void insert(ld key, string data)
+{
+	node now = findLeaf(key);
+	int idx = lower_bound(now.keys.begin(),now.keys.end(),key - 1.0e-10) - now.keys.begin();
+	string newFile = makeNewDataFileName();
+	writeData(newFile, data);
+	//Add entry in now
+	now.numKeys++;
+	now.keys.push_back(key);
+	now.children.push_back(newFile);
+	//Push all the elements 1 place right from idx onwards
+	for(int i = now.keys.size() - 2;i>=idx;i--)
+		now.keys[i+1]=now.keys[i];
+	for(int i = now.children.size() - 2;i>=idx;i--)
+		now.children[i+1] = now.children[i];
+	now.keys[idx] = key;
+	now.children[idx] = newFile;
+	//Check if capacity increased!
+	if( now.numKeys > maxKeys )
+	{
+		//Need to split
+		node rightNode = makeNewNode(true);
+		rightNode.isRoot = 0;
+		rightNode.children.clear();
+		int n = now.numKeys;
+		vector<ld> keys = now.keys;
+		vector<string> children = now.children;
+		now.numKeys = 0;
+		now.keys.clear();
+		now.children.clear();
+		now.isRoot = 0;
+		//Now distribute keys in two nodes equally (now and rightNode)
+		//Make now
+		now.numKeys = n/2;
+		now.keys.resize(now.numKeys);
+		now.children.resize(now.numKeys+1);
+		for(int i=0;i<now.numKeys;++i)
+		{
+			now.keys[i] = keys[i];
+			now.children[i] = children[i];
+		}
+		//The last pointer in now is to rightNode
+		now.children[now.numKeys] = rightNode.fName;
+		//Rest of the keys and children are in rightNode
+		rightNode.numKeys = n - now.numKeys;
+		rightNode.keys.resize(rightNode.numKeys);
+		rightNode.children.resize(rightNode.numKeys+1);
+		for(int i=now.numKeys;i<n;++i)
+		{
+			rightNode.keys[i-now.numKeys] = keys[i];
+			rightNode.children[i-now.numKeys] = children[i];
+		}
+		rightNode.children[rightNode.numKeys] = children[n];
+		//Now push the last key of now above
+		//now.parent = addValueToNode(now.keys[now.numKeys-1],now.parent, now.fName, rightNode.fName);
+		rightNode.parent = now.parent;
+		writeNode(now);
+		writeNode(rightNode);
+	}
+	else
+	{
+		//Peacefully Insert
+		writeNode(now);
 	}
 }
 int main()
@@ -213,6 +253,7 @@ int main()
 			ld key;
 			string data;
 			cin>>key>>data;
+			//insert(key, data);
 		}
 		else if(type == 1)
 		{
