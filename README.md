@@ -5,6 +5,7 @@ B+ Tree!
 - To run use `./btree.out < sampleQueries.txt`
 Basically, the program initially builds the tree of points given in "assgn\_\*" and then reads queries from stdin
 - Supports multiple keys
+- Minimum value of maximum keys = 3
 
 ##Input format:
 - TODO

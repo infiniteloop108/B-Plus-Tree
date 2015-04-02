@@ -133,8 +133,8 @@ node findLeaf(ld key, string nodePtr = rootName)
 }
 //Add key to an internal node
 //left, right are the pointers
-//Returns the pointer to the node in which the key was inserted
-string addValueToNode(ld key, string nowPtr, string left, string right)
+//Returns the pointer to the parents of left and right
+pair<string,string> addValueToNode(ld key, string nowPtr, string left, string right)
 {
 	if( nowPtr == "NULL" )
 	{
@@ -146,7 +146,7 @@ string addValueToNode(ld key, string nowPtr, string left, string right)
 		now.children[0] = left;
 		writeNode(now);
 		rootName = now.fName;
-		return now.fName;
+		return make_pair(now.fName,now.fName);
 	}
 	else
 	{
@@ -154,19 +154,17 @@ string addValueToNode(ld key, string nowPtr, string left, string right)
 		node now = readNode(nowPtr);
 		//Now the left pointer is always present in now
 		//Search for it and insert key and right pointer in the next place
-		now.numKeys++;
-			int idx = 0;
-		while(now.children[idx] != left)
+		int idx = 0;
+		while(idx <= now.numKeys && now.children[idx] != left)
 			idx++;
+		assert(idx <= now.numKeys);
 		//Extend the vectors
+		now.numKeys++;
 		now.keys.push_back(key);
 		now.children.push_back(right);
 		//Insert it in the right place
 		for(int i = now.keys.size() - 2;i>=idx;i--)
-		{
-
 			now.keys[i+1]=now.keys[i];
-		}
 		for(int i = now.children.size() - 2;i>=idx+1;i--)
 			now.children[i+1] = now.children[i];
 		now.keys[idx] = key;
@@ -174,17 +172,57 @@ string addValueToNode(ld key, string nowPtr, string left, string right)
 		//Check if it exceeds capacity
 		if(now.numKeys > maxKeys)
 		{
+			//Normally the return value will be nowPtr, nowPtr if the key just added isn't pushed above
+			pair<string, string> ret = make_pair(nowPtr, nowPtr);
 			//Propogate the split upwards
-
-			cerr<<"damn"<<endl; //?
-			writeNode(now); //?
-			return nowPtr; 	//?
+			int n = now.numKeys;
+			idx = now.numKeys/2;	//Index to remove
+			vector<ld> keys = now.keys;
+			vector<string> children = now.children;
+			//Clear Now
+			now.numKeys = 0;
+			now.children.clear();
+			now.keys.clear();
+			now.isRoot = 0;
+			node rightNode = makeNewNode();
+			rightNode.isRoot = 0;
+			rightNode.children.clear();
+			//Now distribute the keys
+			now.numKeys = idx;
+			now.keys.resize(now.numKeys);
+			now.children.resize(now.numKeys+1);
+			for(int i=0;i<idx;++i)
+			{
+				now.keys[i] = keys[i];
+				now.children[i] = children[i];
+			}
+			now.children[now.numKeys] = children[idx+1];
+			//Make the new right node
+			rightNode.numKeys = n-idx-1;
+			rightNode.keys.resize(rightNode.numKeys);
+			rightNode.children.resize(rightNode.numKeys+1);
+			for(int i=idx+1;i<n;++i)
+			{
+				rightNode.keys[i-idx-1] = keys[i];
+				rightNode.children[i-idx-1] = children[i];
+			}
+			rightNode.children[rightNode.numKeys] = children[n];
+			//If the just added key is removed, then the parents of left and right will be different
+			if(children[idx] == left && children[idx+1]==right)
+				ret = make_pair(nowPtr, rightNode.fName);
+			//Now push the key above
+			pair<string, string> parents = addValueToNode(keys[idx], now.parent, now.fName, rightNode.fName);
+			now.parent = parents.first;
+			rightNode.parent = parents.second;
+			writeNode(now);
+			writeNode(rightNode);
+			return ret;
 		}
 		else
 		{
 			//Peacefully Write
 			writeNode(now);
-			return nowPtr;
+			return make_pair(nowPtr,nowPtr);
 		}
 	}
 }
@@ -245,8 +283,9 @@ void insert(ld key, string data)
 		}
 		rightNode.children[rightNode.numKeys] = children[n];
 		//Now push the last key of now above
-		now.parent = addValueToNode(now.keys[now.numKeys-1],now.parent, now.fName, rightNode.fName);
-		rightNode.parent = now.parent;
+		pair<string, string> parents = addValueToNode(now.keys[now.numKeys-1],now.parent, now.fName, rightNode.fName);
+		now.parent = parents.first;
+		rightNode.parent = parents.second;
 		writeNode(now);
 		writeNode(rightNode);
 	}
@@ -264,8 +303,10 @@ int main()
 	//Read initial points
 	string fileName = "assgn2_bplus_data.txt";
 	ifstream fin(fileName.c_str(), ios::in);
+	int pt=0;
 	while(!fin.eof())
 	{
+		if(pt == 7)break;
 		//Insert these elements
 		ld key;
 		fin>>key;
@@ -273,6 +314,7 @@ int main()
 		string data;
 		fin>>data;
 		insert(key, data);
+		cerr<<++pt<<endl;
 	}
 	fin.close();
 	while(!feof(stdin))
@@ -287,7 +329,7 @@ int main()
 			ld key;
 			string data;
 			cin>>key>>data;
-			//insert(key, data);
+			insert(key, data);
 		}
 		else if(type == 1)
 		{
