@@ -397,7 +397,6 @@ int main()
 	//Read initial points
 	string fileName = "assgn2_bplus_data.txt";
 	ifstream fin(fileName.c_str(), ios::in);
-	int pt = 0;
 	while(!fin.eof())
 	{
 		//Insert these elements
