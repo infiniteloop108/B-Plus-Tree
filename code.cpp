@@ -150,8 +150,42 @@ string addValueToNode(ld key, string nowPtr, string left, string right)
 	}
 	else
 	{
+		//Add in current node
+		node now = readNode(nowPtr);
+		//Now the left pointer is always present in now
+		//Search for it and insert key and right pointer in the next place
+		now.numKeys++;
+			int idx = 0;
+		while(now.children[idx] != left)
+			idx++;
+		//Extend the vectors
+		now.keys.push_back(key);
+		now.children.push_back(right);
+		//Insert it in the right place
+		for(int i = now.keys.size() - 2;i>=idx;i--)
+		{
 
-		return nowPtr;
+			now.keys[i+1]=now.keys[i];
+		}
+		for(int i = now.children.size() - 2;i>=idx+1;i--)
+			now.children[i+1] = now.children[i];
+		now.keys[idx] = key;
+		now.children[idx+1] = right;
+		//Check if it exceeds capacity
+		if(now.numKeys > maxKeys)
+		{
+			//Propogate the split upwards
+
+			cerr<<"damn"<<endl; //?
+			writeNode(now); //?
+			return nowPtr; 	//?
+		}
+		else
+		{
+			//Peacefully Write
+			writeNode(now);
+			return nowPtr;
+		}
 	}
 }
 //Insert into the B+Tree
