@@ -128,7 +128,7 @@ node findLeaf(ld key, string nodePtr = rootName)
 	node now = readNode(nodePtr); 
 	if( now.isLeaf ) return now;
 	//Now find the first element greater or equal than key
-	int idx = lower_bound(now.keys.begin(),now.keys.end(),idx-1.0e-10) - now.keys.begin();	//epsilon used for floating point error
+	int idx = lower_bound(now.keys.begin(),now.keys.end(),key-1.0e-10) - now.keys.begin();	//epsilon used for floating point error
 	return findLeaf(key, now.children[idx]); 
 }
 //Add key to an internal node
@@ -211,7 +211,7 @@ void insert(ld key, string data)
 		}
 		rightNode.children[rightNode.numKeys] = children[n];
 		//Now push the last key of now above
-		//now.parent = addValueToNode(now.keys[now.numKeys-1],now.parent, now.fName, rightNode.fName);
+		now.parent = addValueToNode(now.keys[now.numKeys-1],now.parent, now.fName, rightNode.fName);
 		rightNode.parent = now.parent;
 		writeNode(now);
 		writeNode(rightNode);
