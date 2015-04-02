@@ -388,7 +388,6 @@ void rquery(ld c, ld r)
 	if(!found)
 		cout<<"No Keys found!";
 	cout<<endl;
-
 }
 int main()
 {
