@@ -42,7 +42,7 @@ void readMaxKeys()
 {
 	//Read maxKey from predefined file
 	string fileName = "bplustree.config";
-	ifstream fin(fileName, ios::in);
+	ifstream fin(fileName.c_str(), ios::in);
 	fin>>maxKeys;
 	fin.close();
 }
@@ -60,7 +60,7 @@ struct node
 //Write this node to its file
 void writeNode(node x)
 {
-	ofstream fout(x.fName, ios::out);
+	ofstream fout(x.fName.c_str(), ios::out);
 	fout<<x.isRoot<<endl;
 	fout<<x.isLeaf<<endl;
 	fout<<x.numKeys<<endl;
@@ -75,7 +75,7 @@ void writeNode(node x)
 //Write the data in a file
 void writeData(string fName, string data)
 {
-	ofstream fout(fName,ios::out);
+	ofstream fout(fName.c_str(),ios::out);
 	fout<<data;
 	fout.close();
 }
@@ -84,7 +84,7 @@ node readNode(string fName)
 {
 	node ans;
 	ans.fName = fName;
-	ifstream fin(fName, ios::in);
+	ifstream fin(fName.c_str(), ios::in);
 	fin>>ans.isRoot;
 	fin>>ans.isLeaf;
 	fin>>ans.numKeys;
@@ -263,7 +263,7 @@ int main()
 	init();
 	//Read initial points
 	string fileName = "assgn2_bplus_data.txt";
-	ifstream fin(fileName, ios::in);
+	ifstream fin(fileName.c_str(), ios::in);
 	while(!fin.eof())
 	{
 		//Insert these elements
