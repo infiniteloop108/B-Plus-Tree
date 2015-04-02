@@ -407,7 +407,6 @@ int main()
 		string data;
 		fin>>data;
 		insert(key, data);
-		cout<<"Insert ("<<key<<":"<<data<<"): Success\n";
 	}
 	fin.close();
 	while(!feof(stdin))
@@ -423,6 +422,7 @@ int main()
 			string data;
 			cin>>key>>data;
 			insert(key, data);
+			cout<<"Insert ("<<key<<":"<<data<<"): Success\n";
 		}
 		else if(type == 1)
 		{
