@@ -96,6 +96,15 @@ node readNode(string fName)
 	fin.close();
 	return ans;
 }
+//Read the data from a file
+string readData(string fName)
+{
+	string data;
+	ifstream fin(fName.c_str(), ios::in);
+	fin>>data;
+	fin.close();
+	return data;
+}
 //root node
 string rootName;
 //Make a new node
@@ -319,6 +328,68 @@ void insert(ld key, string data)
 		writeNode(now);
 	}
 }
+void pquery(ld key)
+{
+	cout<<"Point Query (" <<key<<"): ";
+	node now = findLeaf(key);
+	bool found = 0;
+	for(int i=0;i<=now.keys.size();++i)
+	{
+		assert(now.isLeaf);
+		if(i == now.keys.size())
+		{
+			//Goto next node
+			if(now.children[i] == "NULL")break;
+			now = readNode(now.children[i]);
+			i=-1;
+		}
+		if(now.keys[i] > key - 1.0e-10 && now.keys[i] < key + 1.0e-10)
+		{
+			//If this value is key, then display
+			if(found)cout<<", ";
+			found = 1;
+			string data = readData(now.children[i]);
+			cout<<data;
+		}
+		if(now.keys[i] > key + 1.0e-10)
+			break;
+	}
+	if(!found)
+		cout<<"Key does not exist!";
+	cout<<endl;
+}
+void rquery(ld c, ld r)
+{
+	cout<<"Range Query (c:"<<c<<",r:"<<r<<"): ";
+	ld key1 = c-r, key2 = c+r;
+	node now = findLeaf(key1);
+	bool found = 0;
+	for(int i=0;i<=now.keys.size();++i)
+	{
+		assert(now.isLeaf);
+		if(i == now.keys.size())
+		{
+			//Goto next node
+			if(now.children[i] == "NULL")break;
+			now = readNode(now.children[i]);
+			i=-1;
+		}
+		if(now.keys[i] > key1 - 1.0e-10 && now.keys[i] < key2 + 1.0e-10)
+		{
+			//If this value is key, then display
+			if(found)cout<<", ";
+			found = 1;
+			string data = readData(now.children[i]);
+			cout<<now.keys[i]<<":"<<data;
+		}
+		if(now.keys[i] > key2 + 1.0e-10)
+			break;
+	}
+	if(!found)
+		cout<<"No Keys found!";
+	cout<<endl;
+
+}
 int main()
 {
 	readMaxKeys();
@@ -358,12 +429,14 @@ int main()
 			//Point query
 			ld key;
 			cin>>key;
+			pquery(key);
 		}
 		else
 		{
 			//Range Query
 			ld key1,key2;
 			cin>>key1>>key2;
+			rquery(key1, key2);
 		}
 	}
 	return 0;
