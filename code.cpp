@@ -172,8 +172,25 @@ pair<string,string> addValueToNode(ld key, string nowPtr, string left, string ri
 		//Check if it exceeds capacity
 		if(now.numKeys > maxKeys)
 		{
-			//Normally the return value will be nowPtr, nowPtr if the key just added isn't pushed above
-			pair<string, string> ret = make_pair(nowPtr, nowPtr);
+			//Make a new node
+			node rightNode = makeNewNode();
+			//Now set the return parents correctly
+			pair<string, string> ret;
+			if(idx < now.numKeys/2 )
+			{
+				//Added Key is on left
+				ret = make_pair(now.fName, now.fName);
+			}
+			else if(idx > now.numKeys/2)
+			{
+				//Added key is on right
+				ret = make_pair(rightNode.fName, rightNode.fName);
+			}
+			else
+			{
+				//Added key is propogated upwards
+				ret = make_pair(now.fName, rightNode.fName);
+			}
 			//Propogate the split upwards
 			int n = now.numKeys;
 			idx = now.numKeys/2;	//Index to remove
@@ -184,7 +201,6 @@ pair<string,string> addValueToNode(ld key, string nowPtr, string left, string ri
 			now.children.clear();
 			now.keys.clear();
 			now.isRoot = 0;
-			node rightNode = makeNewNode();
 			rightNode.isRoot = 0;
 			rightNode.children.clear();
 			//Now distribute the keys
@@ -207,9 +223,6 @@ pair<string,string> addValueToNode(ld key, string nowPtr, string left, string ri
 				rightNode.children[i-idx-1] = children[i];
 			}
 			rightNode.children[rightNode.numKeys] = children[n];
-			//If the just added key is removed, then the parents of left and right will be different
-			if(children[idx] == left && children[idx+1]==right)
-				ret = make_pair(nowPtr, rightNode.fName);
 			//Now push the key above
 			pair<string, string> parents = addValueToNode(keys[idx], now.parent, now.fName, rightNode.fName);
 			now.parent = parents.first;
@@ -303,10 +316,8 @@ int main()
 	//Read initial points
 	string fileName = "assgn2_bplus_data.txt";
 	ifstream fin(fileName.c_str(), ios::in);
-	int pt=0;
 	while(!fin.eof())
 	{
-		if(pt == 7)break;
 		//Insert these elements
 		ld key;
 		fin>>key;
@@ -314,7 +325,6 @@ int main()
 		string data;
 		fin>>data;
 		insert(key, data);
-		cerr<<++pt<<endl;
 	}
 	fin.close();
 	while(!feof(stdin))
