@@ -6,6 +6,7 @@
 #include<cassert>
 #include<string>
 #include<cmath>
+#include<ctime>
 using namespace std;
 #define ld long double
 #define ll long long
@@ -41,6 +42,7 @@ string makeNewDataFileName()
 int maxKeys = 0;
 bool rebuild = 0;
 bool error = 0;
+ll cnt=0;
 string rootName;
 void readConfig()
 {
@@ -135,6 +137,7 @@ ld stdev(vector<ll> x)
 	{
 		ans+=(x[i]-a)*(x[i]-a);
 	}
+	ans/=(int)x.size();
 	return sqrt(ans);
 }
 //////////////////
@@ -154,6 +157,7 @@ struct node
 //Write this node to its file
 void writeNode(node x)
 {
+	cnt++;
 	ofstream fout(x.fName.c_str(), ios::out);
 	fout<<x.isRoot<<endl;
 	fout<<x.isLeaf<<endl;
@@ -169,6 +173,7 @@ void writeNode(node x)
 //Write the data in a file
 void writeData(string fName, string data)
 {
+	cnt++;
 	ofstream fout(fName.c_str(),ios::out);
 	fout<<data;
 	fout.close();
@@ -176,6 +181,7 @@ void writeData(string fName, string data)
 //Read a node from a file
 node readNode(string fName)
 {
+	cnt++;
 	node ans;
 	ans.fName = fName;
 	ifstream fin(fName.c_str(), ios::in);
@@ -193,6 +199,7 @@ node readNode(string fName)
 //Read the data from a file
 string readData(string fName)
 {
+	cnt++;
 	string data;
 	ifstream fin(fName.c_str(), ios::in);
 	fin>>data;
@@ -485,6 +492,7 @@ void rquery(ld c, ld r)
 }
 int main()
 {
+	clock_t t;
 	readConfig();
 	if(error)
 	{
@@ -524,7 +532,12 @@ int main()
 			ld key;
 			string data;
 			cin>>key>>data;
+			cnt = 0;
+			t = clock();
 			insert(key, data);
+			t = clock() - t;
+			itime.push_back((1000000*t)/CLOCKS_PER_SEC);
+			ifile.push_back(cnt);
 			cout<<"Insert ("<<key<<":"<<data<<"): Success\n";
 		}
 		else if(type == 1)
@@ -532,40 +545,51 @@ int main()
 			//Point query
 			ld key;
 			cin>>key;
+			cnt = 0;
+			t = clock();
 			pquery(key);
+			t = clock() - t;
+			ptime.push_back((1000000*t)/CLOCKS_PER_SEC);
+			pfile.push_back(cnt);
+
 		}
 		else
 		{
 			//Range Query
 			ld key1,key2;
 			cin>>key1>>key2;
+			cnt = 0;
+			t = clock();
 			rquery(key1, key2);
+			t = clock() - t;
+			rtime.push_back((1000000*t)/CLOCKS_PER_SEC);
+			rfile.push_back(cnt);
 		}
 	}
 	cout<<"############\n";
 	cout<<"#STATISTICS#\n";
 	cout<<"############\n";
-	
+	//Insert Queries
 	cout<<"\n#Insert Queries: \n";
 	cout<<"Number of Queries: "<<itime.size()<<"\n";
 	cout<<"Average: time:"<<avg(itime)<<" (us), files accessed:"<<avg(ifile)<<endl;
 	cout<<"Maximum: time:"<<mmax(itime)<<" (us), files accessed:"<<mmax(ifile)<<endl;
 	cout<<"Minimum: time:"<<mmin(itime)<<" (us), files accessed:"<<mmin(ifile)<<endl;
 	cout<<"Standard Deviation: time:"<<stdev(itime)<<" (us), files accessed:"<<stdev(ifile)<<endl;
-
+	//Point Queries
 	cout<<"\n#Point Queries: \n";
 	cout<<"Number of Queries: "<<ptime.size()<<"\n";
 	cout<<"Average: time:"<<avg(ptime)<<" (us), files accessed:"<<avg(pfile)<<endl;
 	cout<<"Maximum: time:"<<mmax(ptime)<<" (us), files accessed:"<<mmax(pfile)<<endl;
 	cout<<"Minimum: time:"<<mmin(ptime)<<" (us), files accessed:"<<mmin(pfile)<<endl;
 	cout<<"Standard Deviation: time:"<<stdev(ptime)<<" (us), files accessed:"<<stdev(pfile)<<endl;
-
-	cout<<"\n#Insert Queries: \n";
+	//Range Queries
+	cout<<"\n#Range Queries: \n";
 	cout<<"Number of Queries: "<<rtime.size()<<"\n";
 	cout<<"Average: time:"<<avg(rtime)<<" (us), files accessed:"<<avg(rfile)<<endl;
 	cout<<"Maximum: time:"<<mmax(rtime)<<" (us), files accessed:"<<mmax(rfile)<<endl;
 	cout<<"Minimum: time:"<<mmin(rtime)<<" (us), files accessed:"<<mmin(rfile)<<endl;
 	cout<<"Standard Deviation: time:"<<stdev(rtime)<<" (us), files accessed:"<<stdev(rfile)<<endl;
-
+	cout<<endl;
 	return 0;
 }
