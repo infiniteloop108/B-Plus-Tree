@@ -4,7 +4,7 @@ B+ Tree!
 - To compile use `make`
 - To clean use `make clean` (Cleans everything including data in the tree)
 - To run use `./btree.out < sampleQueries.txt`
-Basically, the program initially builds the tree of points given in "assgn2\_bplus\_data.txt" and then reads queries from stdin
+- Basically, the program initially builds the tree of points given in "assgn2\_bplus\_data.txt" and then reads queries from stdin
 - This tree supports the presence of a key multiple times
 
 ###Parameters:
@@ -23,7 +23,7 @@ Basically, the program initially builds the tree of points given in "assgn2\_bpl
 - End the input by EOF (Ctrl + D)
 
 ##Output (on stdout):
-- For insert query, success is displayed it it is successful (Should be in absence of bugs :p)
+- For insert query, success is displayed it it is successful (Should be successful in absence of bugs :p)
 - For point query, all the keys equal to that key are printed. (and their data)
 - For a range query, all the keys in the range and their data is printed
 - The time and disk access statistics are displayed. (Only for the queries, not for the initial build)
