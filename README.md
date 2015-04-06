@@ -1,16 +1,26 @@
 B+ Tree!
 ========
+
 - To compile use `make`
 - To clean use `make clean`
 - To run use `./btree.out < sampleQueries.txt`
-Basically, the program initially builds the tree of points given in "assgn\_\*" and then reads queries from stdin
-- Supports multiple keys
-- Minimum value of maximum keys = 3
-- Takes about 3 minutes to insert 10^5 entries
+Basically, the program initially builds the tree of points given in "assgn2\_bplus\_data.txt" and then reads queries from stdin
+- This tree supports the presence of a key multiple times
 
-##Input format:
+###Parameters:
+
+- In file bplustree.config
+- First line contains the maximum number of keys in each B+ Tree node (Should be atleast 3)
+- Second line contains an integer 0/1 signifying whether there is a need to rebuild the tree
+- If it is 0, then the tree is not rebuild and all the data and previous queries persist
+- If it is 1, the index is rebuilt and all the points in "assgn2\_bplus\_data.txt" are re-inserted. (This takes about 3 minutes)
+- Note : If you change the maximum number of keys, then the tree is rebuilt irrespective of the option in the second line. 
+
+##Input format (from stdin):
 - TODO
 
-##Output:
-- Outputs statistics on stdout
-- TODO
+##Output (on stdout):
+- For insert query, success is displayed it it is successful (Should be in absence of bugs :p)
+- For point query, all the keys equal to that key are printed. (and their data)
+- For a range query, all the keys in the range and their data is printed
+- The time and disk access statistics are displayed. (Only for the queries, not for the initial build)
