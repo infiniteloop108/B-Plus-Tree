@@ -5,8 +5,10 @@
 #include<map>
 #include<cassert>
 #include<string>
+#include<cmath>
 using namespace std;
 #define ld long double
+#define ll long long
 //baseNumNode used for file addressing
 int baseNumNode = 0;
 int baseDataFile = 0;
@@ -98,6 +100,42 @@ void writeConfigData()
 	fout<<baseNumNode<<endl;
 	fout<<baseDataFile<<endl;
 	fout.close();
+}
+///////////////////
+//Statistics Info//
+///////////////////
+vector<long long> itime,ptime,rtime;
+vector<long long> ifile,pfile,rfile;
+ld avg(vector<ll> x)
+{
+	if((int)x.size()==0)return 0;
+	ld ans=0;
+	for(int i=0;i<(int)x.size();++i)ans+=x[i];
+	return ans/(int)x.size();
+}
+long long mmax(vector<ll> x)
+{
+	long long ans = 0;
+	for(int i=0;i<(int)x.size();++i)ans=max(ans,x[i]);
+	return ans;
+}
+long long mmin(vector<ll> x)
+{
+	if((int)x.size() == 0)return 0;
+	long long ans = x[0];
+	for(int i=1;i<(int)x.size();++i)ans=min(ans,x[i]);
+	return ans;
+}
+ld stdev(vector<ll> x)
+{
+	if((int)x.size()==0)return 0;
+	ld a = avg(x);
+	ld ans=0;
+	for(int i=0;i<(int)x.size();++i)
+	{
+		ans+=(x[i]-a)*(x[i]-a);
+	}
+	return sqrt(ans);
 }
 //////////////////
 //B+ Tree Starts//
@@ -504,5 +542,30 @@ int main()
 			rquery(key1, key2);
 		}
 	}
+	cout<<"############\n";
+	cout<<"#STATISTICS#\n";
+	cout<<"############\n";
+	
+	cout<<"\n#Insert Queries: \n";
+	cout<<"Number of Queries: "<<itime.size()<<"\n";
+	cout<<"Average: time:"<<avg(itime)<<" (us), files accessed:"<<avg(ifile)<<endl;
+	cout<<"Maximum: time:"<<mmax(itime)<<" (us), files accessed:"<<mmax(ifile)<<endl;
+	cout<<"Minimum: time:"<<mmin(itime)<<" (us), files accessed:"<<mmin(ifile)<<endl;
+	cout<<"Standard Deviation: time:"<<stdev(itime)<<" (us), files accessed:"<<stdev(ifile)<<endl;
+
+	cout<<"\n#Point Queries: \n";
+	cout<<"Number of Queries: "<<ptime.size()<<"\n";
+	cout<<"Average: time:"<<avg(ptime)<<" (us), files accessed:"<<avg(pfile)<<endl;
+	cout<<"Maximum: time:"<<mmax(ptime)<<" (us), files accessed:"<<mmax(pfile)<<endl;
+	cout<<"Minimum: time:"<<mmin(ptime)<<" (us), files accessed:"<<mmin(pfile)<<endl;
+	cout<<"Standard Deviation: time:"<<stdev(ptime)<<" (us), files accessed:"<<stdev(pfile)<<endl;
+
+	cout<<"\n#Insert Queries: \n";
+	cout<<"Number of Queries: "<<rtime.size()<<"\n";
+	cout<<"Average: time:"<<avg(rtime)<<" (us), files accessed:"<<avg(rfile)<<endl;
+	cout<<"Maximum: time:"<<mmax(rtime)<<" (us), files accessed:"<<mmax(rfile)<<endl;
+	cout<<"Minimum: time:"<<mmin(rtime)<<" (us), files accessed:"<<mmin(rfile)<<endl;
+	cout<<"Standard Deviation: time:"<<stdev(rtime)<<" (us), files accessed:"<<stdev(rfile)<<endl;
+
 	return 0;
 }
