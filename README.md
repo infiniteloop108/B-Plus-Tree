@@ -2,7 +2,7 @@ B+ Tree!
 ========
 
 - To compile use `make`
-- To clean use `make clean`
+- To clean use `make clean` (Cleans everything including data in the tree)
 - To run use `./btree.out < sampleQueries.txt`
 Basically, the program initially builds the tree of points given in "assgn2\_bplus\_data.txt" and then reads queries from stdin
 - This tree supports the presence of a key multiple times
@@ -17,7 +17,10 @@ Basically, the program initially builds the tree of points given in "assgn2\_bpl
 - Note : If you change the maximum number of keys, then the tree is rebuilt irrespective of the option in the second line. 
 
 ##Input format (from stdin):
-- TODO
+- Insert: `0 key data`
+- Point Query: `1 key`
+- Range Query: `2 center radius`
+- End the input by EOF (Ctrl + D)
 
 ##Output (on stdout):
 - For insert query, success is displayed it it is successful (Should be in absence of bugs :p)

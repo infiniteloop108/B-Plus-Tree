@@ -36,16 +36,72 @@ string makeNewDataFileName()
 	}
 	return "data/" + ans + ".txt";
 }
-//Max keys in a node
 int maxKeys = 0;
-void readMaxKeys()
+bool rebuild = 0;
+bool error = 0;
+string rootName;
+void readConfig()
 {
 	//Read maxKey from predefined file
 	string fileName = "bplustree.config";
 	ifstream fin(fileName.c_str(), ios::in);
 	fin>>maxKeys;
+	fin>>rebuild;
 	fin.close();
+	if(maxKeys < 3)
+	{
+		cout<<"Max Keys should be atleast 3\n";
+		error = 1;
+		return;
+	}
+	if(rebuild)
+	{
+		cout<<"Building tree as asked\n";
+		return;
+	}
+	fileName = ".builtTreeConfig";
+	if (FILE *file = fopen(fileName.c_str(), "r")) 
+	{
+		fclose(file);
+		//Old tree exists
+		ifstream fin(fileName.c_str(), ios::in);
+		int mk;
+		fin>>rootName;
+		fin>>mk;
+		fin>>baseNumNode;
+		fin>>baseDataFile;
+		fin.close();
+		if(mk != maxKeys)
+		{
+			cout<<"Max Keys changed! Rebuilding!\n";
+			baseNumNode = 0;
+			baseDataFile = 0;
+			rebuild = 1;
+			return;
+		}
+	} 
+	else 
+	{
+		//Old tree doesn't exist
+		cout<<"Old tree not found. Rebuilding!\n";
+		rebuild = 1;
+		return;
+	} 
 }
+void writeConfigData()
+{
+	//Write rootName so that it can be read on later executions of code
+	string fileName = ".builtTreeConfig";
+	ofstream fout(fileName.c_str(), ios::out);
+	fout<<rootName<<endl;
+	fout<<maxKeys<<endl;
+	fout<<baseNumNode<<endl;
+	fout<<baseDataFile<<endl;
+	fout.close();
+}
+//////////////////
+//B+ Tree Starts//
+//////////////////
 //Node for B+ tree
 struct node
 {
@@ -105,8 +161,6 @@ string readData(string fName)
 	fin.close();
 	return data;
 }
-//root node
-string rootName;
 //Make a new node
 //This might be a leaf if making the root (first time)
 node makeNewNode(bool isLeaf = false)
@@ -129,6 +183,7 @@ void init()
 	node root = makeNewNode(true);
 	rootName = root.fName;
 	writeNode(root);
+	writeConfigData();
 	return;
 }
 //Find the leaf node corresponding to a key
@@ -327,6 +382,7 @@ void insert(ld key, string data)
 		//Peacefully Insert
 		writeNode(now);
 	}
+	writeConfigData();
 }
 void pquery(ld key)
 {
@@ -391,23 +447,33 @@ void rquery(ld c, ld r)
 }
 int main()
 {
-	readMaxKeys();
-	//Build the initial tree
-	init();
-	//Read initial points
-	string fileName = "assgn2_bplus_data.txt";
-	ifstream fin(fileName.c_str(), ios::in);
-	while(!fin.eof())
+	readConfig();
+	if(error)
 	{
-		//Insert these elements
-		ld key;
-		fin>>key;
-		if(fin.eof())break;
-		string data;
-		fin>>data;
-		insert(key, data);
+		cout<<"Aborting! See you next time!\n";
+		return 0;
 	}
-	fin.close();
+	if(rebuild)
+	{
+		//Build the initial tree
+		init();
+		//Read initial points
+		string fileName = "assgn2_bplus_data.txt";
+		ifstream fin(fileName.c_str(), ios::in);
+		while(!fin.eof())
+		{
+			//Insert these elements
+			ld key;
+			fin>>key;
+			if(fin.eof())break;
+			string data;
+			fin>>data;
+			insert(key, data);
+		}
+		fin.close();
+		cout<<"Initial Tree Built\n";
+	}
+	cout<<"Enter Queries: \n";
 	while(!feof(stdin))
 	{
 		int type;

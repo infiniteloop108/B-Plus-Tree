@@ -4,3 +4,4 @@ clean:
 	rm -f nodes/*
 	rm -f data/*
 	rm -f *.out
+	rm -f .builtTreeConfig
