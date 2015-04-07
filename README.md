@@ -23,7 +23,7 @@ B+ Tree!
 - End the input by EOF (Ctrl + D)
 
 ##Output (on stdout):
-- For insert query, success is displayed it it is successful (Should be successful in absence of bugs :p)
+- For insert query, success is displayed if it is successful (Should be successful in absence of bugs :p)
 - For point query, all the keys equal to that key are printed. (and their data)
 - For a range query, all the keys in the range and their data is printed
 - The time and disk access statistics are displayed. (Only for the queries, not for the initial build)
